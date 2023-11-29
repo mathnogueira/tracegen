@@ -1,7 +1,7 @@
 package generator
 
 import (
-	"github.com/kubeshop/tracegen/generator/application"
+	"github.com/mathnogueira/tracegen/generator/application"
 )
 
 func CreateExecutionGraph(config Config) (*ExecutionGraph, error) {

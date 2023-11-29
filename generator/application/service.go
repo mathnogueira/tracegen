@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kubeshop/tracegen/telemetry"
+	"github.com/mathnogueira/tracegen/telemetry"
 	"go.opentelemetry.io/otel/trace"
 )
 

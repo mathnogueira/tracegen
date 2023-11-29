@@ -1,4 +1,4 @@
-module github.com/kubeshop/tracegen
+module github.com/mathnogueira/tracegen
 
 go 1.21.1
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/kubeshop/tracegen/generator"
+	"github.com/mathnogueira/tracegen/generator"
 )
 
 func main() {

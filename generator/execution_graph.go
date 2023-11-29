@@ -5,8 +5,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/kubeshop/tracegen/generator/application"
 	dag "github.com/laser/random-dag-generator-go"
+	"github.com/mathnogueira/tracegen/generator/application"
 )
 
 type ExecutionNode struct {

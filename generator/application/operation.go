@@ -3,7 +3,7 @@ package application
 import (
 	"context"
 
-	"github.com/kubeshop/tracegen/generator/application/operation"
+	"github.com/mathnogueira/tracegen/generator/application/operation"
 	"go.opentelemetry.io/otel/trace"
 )
 
