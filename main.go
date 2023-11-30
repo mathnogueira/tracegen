@@ -1,23 +1,7 @@
 package main
 
-import (
-	"context"
-	"log"
-
-	"github.com/mathnogueira/tracegen/generator"
-)
+import "github.com/mathnogueira/tracegen/cmd"
 
 func main() {
-	executionGraph, err := generator.CreateExecutionGraph(generator.Config{
-		NumberServices: 5,
-		NumberSpans:    20,
-		Collector: generator.CollectorConfig{
-			Endpoint: "localhost:4317",
-		},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	executionGraph.Execute(context.Background())
+	cmd.Execute()
 }
