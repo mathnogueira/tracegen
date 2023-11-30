@@ -2,6 +2,7 @@ package generator
 
 import (
 	"context"
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -15,53 +16,40 @@ type ExecutionNode struct {
 	IsRoot    bool
 }
 
+func (n *ExecutionNode) IsLeaf() bool {
+	return len(n.Next) == 0
+}
+
 type ExecutionGraph struct {
 	EntryPoint ExecutionNode
 }
 
-func newExecutionGraph(operations []*application.Operation) *ExecutionGraph {
-	graph := dag.Random(
-		dag.WithNodeQty(len(operations)),
-		dag.WithMaxOutdegree(4),
-		dag.WithEdgeFactor(0.5),
-	)
+func newExecutionGraph(services []*application.Service) *ExecutionGraph {
+	serviceNodes := make([][]*ExecutionNode, len(services))
+	leafNodes := make([][]*ExecutionNode, len(services))
+	rootNodes := make([][]*ExecutionNode, len(services))
+	for i, service := range services {
+		serviceNodes[i] = newServiceExecutionNodes(service)
+		leafNodes[i] = make([]*ExecutionNode, 0)
+		rootNodes[i] = make([]*ExecutionNode, 0)
+		for _, node := range serviceNodes[i] {
+			if node.IsLeaf() {
+				leafNodes[i] = append(leafNodes[i], node)
+			}
 
-	nodes := make(map[string]*ExecutionNode)
-	for i, node := range graph.Nodes {
-		nodes[node.GetID()] = &ExecutionNode{
-			Operation: operations[i],
-			Next:      make([]*ExecutionNode, 0),
-			IsRoot:    true,
+			if node.IsRoot {
+				rootNodes[i] = append(rootNodes[i], node)
+			}
 		}
 	}
 
-	referencedNodes := make(map[string]bool)
-
-	for _, edge := range graph.Edges {
-		source := nodes[edge.GetSourceNodeID()]
-		target := nodes[edge.GetTargetNodeID()]
-
-		if _, ok := referencedNodes[edge.GetTargetNodeID()]; ok {
-			// an operation can only be referenced once
-			continue
-		}
-
-		referencedNodes[edge.GetTargetNodeID()] = true
-
-		source.Next = append(source.Next, target)
-		target.IsRoot = false
-	}
-
-	rootNodes := make([]*ExecutionNode, 0)
-	for _, node := range nodes {
-		if node.IsRoot {
-			rootNodes = append(rootNodes, node)
-		}
+	for i, _ := range services {
+		linkNodes(leafNodes, rootNodes, i)
 	}
 
 	// promote one root to be the only root
-	realRoot := rootNodes[rand.Intn(len(rootNodes))]
-	for _, root := range rootNodes {
+	realRoot := rootNodes[0][rand.Intn(len(rootNodes[0]))]
+	for _, root := range rootNodes[0] {
 		if realRoot == root {
 			continue
 		}
@@ -75,11 +63,64 @@ func newExecutionGraph(operations []*application.Operation) *ExecutionGraph {
 	}
 }
 
+func linkNodes(source, target [][]*ExecutionNode, index int) {
+	numberServices := len(source)
+	if index+1 >= numberServices {
+		return
+	}
+
+	totalNumberSpansNeedLinking := len(target[index+1])
+	i := 0
+	for totalNumberSpansNeedLinking > 0 {
+		leaf := source[index][i%len(source[index])]
+		root := target[index+1][i]
+
+		fmt.Printf("[%s] %s --> [%s] %s\n", leaf.Operation.Entity, leaf.Operation.Name, root.Operation.Entity, root.Operation.Name)
+
+		leaf.Next = append(leaf.Next, root)
+		totalNumberSpansNeedLinking--
+		i++
+	}
+}
+
+func newServiceExecutionNodes(service *application.Service) []*ExecutionNode {
+	graph := dag.Random(
+		dag.WithNodeQty(len(service.Operations)),
+		dag.WithMaxOutdegree(4),
+		dag.WithEdgeFactor(0.5),
+	)
+
+	nodes := make(map[string]*ExecutionNode)
+	for i, node := range graph.Nodes {
+		nodes[node.GetID()] = &ExecutionNode{
+			Operation: service.Operations[i],
+			Next:      make([]*ExecutionNode, 0),
+			IsRoot:    true,
+		}
+	}
+
+	for _, edge := range graph.Edges {
+		source := nodes[edge.GetSourceNodeID()]
+		target := nodes[edge.GetTargetNodeID()]
+
+		target.IsRoot = false
+		source.Next = append(source.Next, target)
+	}
+
+	nodesSlice := make([]*ExecutionNode, 0)
+	for _, node := range nodes {
+		nodesSlice = append(nodesSlice, node)
+	}
+
+	return nodesSlice
+}
+
 func (g *ExecutionGraph) Execute(ctx context.Context) {
 	g.EntryPoint.Execute(ctx)
 }
 
 func (n *ExecutionNode) Execute(ctx context.Context) context.Context {
+	fmt.Printf("Running [%s] %s\n", n.Operation.Entity, n.Operation.Name)
 	ctx, span := n.Operation.CreateSpan(ctx)
 	defer span.End()
 

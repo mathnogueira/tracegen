@@ -9,8 +9,8 @@ import (
 
 func main() {
 	executionGraph, err := generator.CreateExecutionGraph(generator.Config{
-		NumberServices: 10,
-		NumberSpans:    150,
+		NumberServices: 5,
+		NumberSpans:    20,
 		Collector: generator.CollectorConfig{
 			Endpoint: "localhost:4317",
 		},

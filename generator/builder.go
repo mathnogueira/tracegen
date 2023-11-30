@@ -13,15 +13,13 @@ func CreateExecutionGraph(config Config) (*ExecutionGraph, error) {
 		))
 	}
 
-	flatten := make([]*application.Operation, 0)
 	for _, service := range services {
 		for i := 0; i < numberSpansPerService; i++ {
 			operation := application.NewOperation(service.Domain, service.Tracer)
 			service.Operations = append(service.Operations, operation)
-			flatten = append(flatten, operation)
 		}
 	}
 
-	executionGraph := newExecutionGraph(flatten)
+	executionGraph := newExecutionGraph(services)
 	return executionGraph, nil
 }
