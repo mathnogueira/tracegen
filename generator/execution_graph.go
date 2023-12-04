@@ -115,7 +115,11 @@ func newServiceExecutionNodes(service *application.Service) []*ExecutionNode {
 	return nodesSlice
 }
 
-func (g *ExecutionGraph) Execute(ctx context.Context) {
+func (g *ExecutionGraph) Execute(ctx context.Context, opts ...Option) {
+	for _, opt := range opts {
+		ctx = opt(ctx)
+	}
+
 	g.EntryPoint.Execute(ctx)
 }
 

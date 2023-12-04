@@ -6,6 +6,7 @@ var (
 	collectorEndpoint string
 	services          int
 	minSpans          int
+	traceState        []string
 )
 
 var RootCmd = &cobra.Command{
@@ -21,6 +22,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&collectorEndpoint, "collector", "c", "localhost:4317", "grpc endpoint for your collector")
 	RootCmd.PersistentFlags().IntVarP(&services, "services", "s", 1, "number of services generating traces")
 	RootCmd.PersistentFlags().IntVarP(&minSpans, "spans", "n", 10, "minimum number of spans")
+	RootCmd.PersistentFlags().StringSliceVar(&traceState, "tracestate", []string{}, "list of tracestates to be included. First item is the name, second is the value")
 
 	RootCmd.AddCommand(StartCmd)
 	RootCmd.AddCommand(ServeCmd)

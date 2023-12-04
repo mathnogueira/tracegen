@@ -19,5 +19,8 @@ func run(ctx context.Context) {
 		log.Fatal(err)
 	}
 
-	executionGraph.Execute(ctx)
+	executionGraph.Execute(
+		ctx,
+		generator.WithTraceStates(traceState),
+	)
 }
