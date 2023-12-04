@@ -43,7 +43,7 @@ func newExecutionGraph(services []*application.Service) *ExecutionGraph {
 		}
 	}
 
-	for i, _ := range services {
+	for i := range services {
 		linkNodes(leafNodes, rootNodes, i)
 	}
 
