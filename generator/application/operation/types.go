@@ -43,8 +43,12 @@ func GetRandomName(t Type, entity string) string {
 		input = ProcessingOperations
 	}
 
-	randomName := input[rand.Intn(len(input))]
+	randomName := random(input)
 	return fmt.Sprintf(randomName, entity)
+}
+
+func random(options []string) string {
+	return options[rand.Intn(len(options))]
 }
 
 var EntrypointOperations = []string{

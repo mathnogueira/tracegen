@@ -8,6 +8,8 @@ import (
 
 	dag "github.com/laser/random-dag-generator-go"
 	"github.com/mathnogueira/tracegen/generator/application"
+	"github.com/mathnogueira/tracegen/generator/application/operation"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type ExecutionNode struct {
@@ -127,6 +129,10 @@ func (n *ExecutionNode) Execute(ctx context.Context) context.Context {
 	fmt.Printf("Running [%s] %s\n", n.Operation.Entity, n.Operation.Name)
 	ctx, span := n.Operation.CreateSpan(ctx)
 	defer span.End()
+
+	span.SetAttributes(operation.GenerateRandomAttributes(5)...)
+	event := operation.NewEvent()
+	span.AddEvent(event.Name, trace.WithAttributes(event.Attributes...))
 
 	time.Sleep(100 * time.Millisecond)
 
