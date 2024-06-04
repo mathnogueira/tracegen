@@ -3,18 +3,33 @@ package cmd
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/mathnogueira/tracegen/generator"
 )
 
-func run(ctx context.Context) {
-	executionGraph, err := generator.CreateExecutionGraph(generator.Config{
+type runOption func(*generator.Config)
+
+func WithDelay(delay time.Duration) runOption {
+	return func(c *generator.Config) {
+		c.Delay = delay
+	}
+}
+
+func run(ctx context.Context, opts ...runOption) {
+	config := generator.Config{
 		NumberServices: uint(services),
 		NumberSpans:    uint(minSpans),
 		Collector: generator.CollectorConfig{
 			Endpoint: collectorEndpoint,
 		},
-	})
+	}
+
+	for _, opt := range opts {
+		opt(&config)
+	}
+
+	executionGraph, err := generator.CreateExecutionGraph(config)
 	if err != nil {
 		log.Fatal(err)
 	}
