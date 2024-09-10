@@ -5,12 +5,16 @@ A utility tool capable of generating OpenTelemetry traces. It can work in two mo
 * cli
 * http server
 
+Both modes generates traces and send them to `http://localhost:4317` (you can override this by passing the option `-c <your-collector-endpoint`
+
 ## CLI
+Generates a single trace every time you run it.
 ```
 tracegen -s 10 -n 30 start
 ```
 
 ## HTTP Server
+Creates an HTTP Server that generates a new server everytimes the endpoint `GET /` is called.
 ```
 tracegen -s 10 -n 30 -p 9095 serve
 ```
