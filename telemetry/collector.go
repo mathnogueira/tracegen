@@ -99,9 +99,10 @@ func getCollectorGRPCExporter(ctx context.Context, config Config) (sdktrace.Span
 func getCollectorHTTPExporter(ctx context.Context, config Config) (sdktrace.SpanExporter, error) {
 	fmt.Println("creating http collector: ", config.CollectorEndpoint)
 
-	endpoint := strings.ReplaceAll(config.CollectorEndpoint, "https://", "")
-	endpoint = strings.ReplaceAll(config.CollectorEndpoint, "http://", "")
-	exporter, err := otlptracehttp.New(ctx, otlptracehttp.WithEndpoint(endpoint))
+	endpoint := strings.ReplaceAll(config.CollectorEndpoint, "http://", "")
+	endpoint = strings.ReplaceAll(endpoint, "https://", "")
+
+	exporter, err := otlptracehttp.New(ctx, otlptracehttp.WithEndpoint(endpoint), otlptracehttp.WithInsecure())
 	if err != nil {
 		return nil, fmt.Errorf("could not create trace exporter: %w", err)
 	}
