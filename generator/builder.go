@@ -10,6 +10,7 @@ func CreateExecutionGraph(config Config) (*ExecutionGraph, error) {
 	for i := 0; i < int(config.NumberServices); i++ {
 		services = append(services, application.NewService(
 			application.WithCollectorEndpoint(config.Collector.Endpoint),
+			application.WithInsecure(config.Collector.Insecure),
 		))
 	}
 

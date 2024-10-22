@@ -110,6 +110,7 @@ var types = []string{
 
 type config struct {
 	collectorEndpoint string
+	insecure          bool
 }
 
 func NewService(options ...ServiceOption) *Service {
@@ -125,6 +126,7 @@ func NewService(options ...ServiceOption) *Service {
 		ServiceName:       name,
 		TracerName:        name,
 		CollectorEndpoint: config.collectorEndpoint,
+		Insecure:          config.insecure,
 	})
 	if err != nil {
 		panic(err)
@@ -143,5 +145,11 @@ type ServiceOption func(*config)
 func WithCollectorEndpoint(endpoint string) ServiceOption {
 	return func(c *config) {
 		c.collectorEndpoint = endpoint
+	}
+}
+
+func WithInsecure(insecure bool) ServiceOption {
+	return func(c *config) {
+		c.insecure = insecure
 	}
 }

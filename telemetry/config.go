@@ -8,6 +8,7 @@ type Config struct {
 	ServiceName       string `json:"service_name"`
 	TracerName        string `json:"tracer_name"`
 	CollectorEndpoint string `json:"collector_endpoint"`
+	Insecure          bool   `json:"insecure"`
 }
 
 func (c Config) Validate() error {

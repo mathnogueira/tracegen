@@ -102,7 +102,15 @@ func getCollectorHTTPExporter(ctx context.Context, config Config) (sdktrace.Span
 	endpoint := strings.ReplaceAll(config.CollectorEndpoint, "http://", "")
 	endpoint = strings.ReplaceAll(endpoint, "https://", "")
 
-	exporter, err := otlptracehttp.New(ctx, otlptracehttp.WithEndpoint(endpoint), otlptracehttp.WithInsecure())
+	options := []otlptracehttp.Option{
+		otlptracehttp.WithEndpoint(endpoint),
+	}
+
+	if config.Insecure {
+		options = append(options, otlptracehttp.WithInsecure())
+	}
+
+	exporter, err := otlptracehttp.New(ctx, options...)
 	if err != nil {
 		return nil, fmt.Errorf("could not create trace exporter: %w", err)
 	}

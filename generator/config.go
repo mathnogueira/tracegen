@@ -12,4 +12,5 @@ type Config struct {
 
 type CollectorConfig struct {
 	Endpoint string `json:"endpoint"`
+	Insecure bool   `json:"insecure"`
 }

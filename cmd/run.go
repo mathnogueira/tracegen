@@ -22,6 +22,7 @@ func run(ctx context.Context, opts ...runOption) {
 		NumberSpans:    uint(minSpans),
 		Collector: generator.CollectorConfig{
 			Endpoint: collectorEndpoint,
+			Insecure: insecure,
 		},
 	}
 
